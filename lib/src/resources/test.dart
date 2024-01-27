@@ -1,143 +1,131 @@
-import 'package:flutter/gestures.dart';
+import 'package:fl_uberapp/src/blocs/place_bloc.dart';
+import 'package:fl_uberapp/src/model/place_item_res.dart';
 import 'package:flutter/material.dart';
-import 'package:icar/src/resources/register_page.dart';
 
-import '../app.dart';
+class RidePickerPage extends StatefulWidget {
+  final String selectedAddress;
+  final Function(PlaceItemRes, bool) onSelected;
+  final bool _isFromAddress;
+  RidePickerPage(this.selectedAddress, this.onSelected, this._isFromAddress);
 
-class LoginPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RidePickerPageState createState() => _RidePickerPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passController = TextEditingController();
+class _RidePickerPageState extends State<RidePickerPage> {
+  var _addressController;
+  var placeBloc = PlaceBloc();
+
+  @override
+  void initState() {
+    _addressController = TextEditingController(text: widget.selectedAddress);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    placeBloc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Container(
-        padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
         constraints: BoxConstraints.expand(),
-        color: Colors.white,
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 140,
-              ),
-              Image.asset('assets/ic_car_green.png'),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 40, 0, 6),
-                child: Text(
-                  "Welcome back!",
-                  style: TextStyle(fontSize: 22, color: Color(0xff333333)),
-                ),
-              ),
-              Text(
-                "Login to continue using iCab",
-                style: TextStyle(fontSize: 16, color: Color(0xff606470)),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 145, 0, 20),
-                child: TextField(
-                  controller: _emailController,
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                  decoration: InputDecoration(
-                      labelText: "Email",
-                      prefixIcon: Container(
-                          width: 50, child: Image.asset("assets/ic_mail.png")),
-                      border: OutlineInputBorder(
-                          borderSide:
-                          BorderSide(color: Color(0xffCED0D2), width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(6)))),
-                ),
-              ),
-              TextField(
-                controller: _passController,
-                style: TextStyle(fontSize: 18, color: Colors.black),
-                obscureText: true,
-                decoration: InputDecoration(
-                    labelText: "Password",
-                    prefixIcon: Container(
-                        width: 50, child: Image.asset("assets/ic_phone.png")),
-                    border: OutlineInputBorder(
-                        borderSide:
-                        BorderSide(color: Color(0xffCED0D2), width: 1),
-                        borderRadius: BorderRadius.all(Radius.circular(6)))),
-              ),
-              Container(
-                constraints: BoxConstraints.loose(Size(double.infinity, 30)),
-                alignment: AlignmentDirectional.centerEnd,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                  child: Text(
-                    "Forgot password?",
-                    style: TextStyle(fontSize: 16, color: Color(0xff606470)),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 30, 0, 40),
-                child: SizedBox(
+        color: Color(0xfff8f8f8),
+        child: Column(
+          children: <Widget>[
+            Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Container(
                   width: double.infinity,
-                  height: 52,
-                  child: TextButton(
-                    onPressed: _onLoginClick,
-                    style: TextButton.styleFrom(
-                      backgroundColor: Color(0xff3277D8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(6)),
+                  height: 60,
+                  child: Stack(
+                    alignment: AlignmentDirectional.centerStart,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 40,
+                        height: 60,
+                        child: Center(
+                          child: Image.asset("ic_location_black.png"),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      "Log In",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        width: 40,
+                        height: 60,
+                        child: Center(
+                          child: FlatButton(
+                              onPressed: () {
+                                _addressController.text = "";
+                              },
+                              child: Image.asset("ic_remove_x.png")),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 40, right: 50),
+                        child: TextField(
+                          controller: _addressController,
+                          textInputAction: TextInputAction.search,
+                          onSubmitted: (str) {
+                            placeBloc.searchPlace(str);
+                          },
+                          style:
+                          TextStyle(fontSize: 16, color: Color(0xff323643)),
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ),
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 20),
+              child: StreamBuilder(
+                  stream: placeBloc.placeStream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      print(snapshot.data.toString());
+                      if (snapshot.data == "start") {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
 
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
-                child: RichText(
-                  text: TextSpan(
-                      text: "New user? ",
-                      style: TextStyle(color: Color(0xff606470), fontSize: 16),
-                      children: <TextSpan>[
-                        TextSpan(
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => RegisterPage()));
-                              },
-                            text: "Sign up for a new account",
-                            style: TextStyle(
-                                color: Color(0xff3277D8), fontSize: 16))
-                      ]),
-                ),
-              )
-            ],
-          ),
+                      print(snapshot.data.toString());
+                      List<PlaceItemRes> places = snapshot.data;
+                      return ListView.separated(
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                                title: Text(places.elementAt(index).name == null ? '' : Text(places.elementAt(index).name),
+                            subtitle: Text(places.elementAt(index).address == null ? '' : Text(places.elementAt(index).address),
+                            onTap: () {
+                            print("on tap");
+                            Navigator.of(context).pop();
+                            widget.onSelected(places.elementAt(index),
+                            widget._isFromAddress);
+                            },
+                            );
+                          },
+                          separatorBuilder: (context, index) => Divider(
+                            height: 1,
+                            color: Color(0xfff5f5f5),
+                          ),
+                          itemCount: places.length);
+                    } else {
+                      return Container();
+                    }
+                  }),
+            )
+          ],
         ),
       ),
     );
-  }
-
-  void _onLoginClick() {
-    String email = _emailController.text;
-    String pass = _passController.text;
-    // var authBloc = MyApp.of(context).authBloc;
-    // LoadingDialog.showLoadingDialog(context, "Loading...");
-    // authBloc.signIn(email, pass, () {
-    //   LoadingDialog.hideLoadingDialog(context);
-    //   Navigator.of(context)
-    //       .push(MaterialPageRoute(builder: (context) => HomePage()));
-    // }, (msg) {
-    //   LoadingDialog.hideLoadingDialog(context);
-    //   MsgDialog.showMsgDialog(context, "Sign-In", msg);
-    // });
   }
 }

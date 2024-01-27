@@ -5,6 +5,7 @@ import 'package:icar/src/resources/register_page.dart';
 
 import '../../values/app_assets.dart';
 import '../../values/app_color.dart';
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -81,7 +82,12 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomePage()));
+                    },
                     child: Text(
                       "Log In",
                       style: TextStyle(color: Colors.white, fontSize: 18),
