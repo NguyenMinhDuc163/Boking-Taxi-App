@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1014518355437",
+    "firebase_url": "https://icarapp-f80cc-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "icarapp-f80cc",
+    "storage_bucket": "icarapp-f80cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1014518355437:android:86dd2ecadd78ad06c7c3e4",
+        "android_client_info": {
+          "package_name": "com.example.icar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqL0ZaUPg8LnIl1qaLHwXKKXO2wS7G2dg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
