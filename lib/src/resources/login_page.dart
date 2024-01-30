@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:icar/src/app.dart';
+import 'package:icar/src/resources/dialog/loading_dialog.dart';
+import 'package:icar/src/resources/dialog/msg_dialog.dart';
 import 'package:icar/src/resources/register_page.dart';
 
 import '../../values/app_assets.dart';
@@ -15,6 +18,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +42,7 @@ class _LoginPageState extends State<LoginPage> {
               Padding(
                   padding: const EdgeInsets.fromLTRB(0, 100, 0, 20),
                 child: TextField(
+                  controller: _emailController,
                   style: TextStyle(fontSize: 18, color: Colors.black),
                   decoration: InputDecoration(
                     labelText: "Email",
@@ -52,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               TextField(
+                controller: _passController,
                 style: TextStyle(fontSize: 18, color: Colors.black),
                 obscureText: true, // an mat khau
                 decoration: InputDecoration(
@@ -82,12 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomePage()));
-                    },
+                    onPressed: _onLoginClick,
                     child: Text(
                       "Log In",
                       style: TextStyle(color: Colors.white, fontSize: 18),
@@ -129,5 +131,20 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  void _onLoginClick(){
+    String email = _emailController.text;
+    String pass = _passController.text;
+    print("tai khoan mat khau: ${_emailController.text} ${_passController.text}");
+    var authBloc = MyApp.of(context).authBloc; // goi tu Myapp
+    LoadingDialog.showLoadingDialog(context, "Loading...");
+    authBloc!.signIn(email, pass, (){
+      LoadingDialog.hideLoadingDialog(context);
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage()));
+    }, (msg){
+      LoadingDialog.hideLoadingDialog(context);
+      MsgDiaLog.showMsgDialog(context, "Sign-In", msg);
+    });
   }
 }

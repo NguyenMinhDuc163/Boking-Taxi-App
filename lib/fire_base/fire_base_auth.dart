@@ -16,17 +16,7 @@ class FirAuth {
     });
   }
 
-  // void signUp(String email, String password, String name, String phone,
-  //     Function onSuccess, Function(String) onRegisterError) {
-  //   _fireBaseAuth
-  //       .createUserWithEmailAndPassword(email: email, password: password)
-  //       .then((UserCredential userCredential) {
-  //     String uid = userCredential.user!.uid;
-  //     _createUser(uid, name, phone, onSuccess, onRegisterError);
-  //   }).catchError((error) {
-  //     print("Error: " + error.toString());
-  //     _onSignUpError(error, onRegisterError);
-  //   });
+
   void signIn(String email, String pass, Function onSuccess,
       Function(String) onSignInError) {
     _fireBaseAuth

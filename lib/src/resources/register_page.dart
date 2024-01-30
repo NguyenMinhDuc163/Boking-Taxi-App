@@ -2,6 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:icar/src/resources/dialog/loading_dialog.dart';
+import 'package:icar/src/resources/dialog/msg_dialog.dart';
 
 import '../../values/app_assets.dart';
 import '../../values/app_color.dart';
@@ -61,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: TextStyle(fontSize: 18, color: Colors.black),
                     decoration: InputDecoration(
                         labelText: "Name",
-                        // errorText: "",
+                        errorText: snapshot.hasError ? snapshot.error.toString() : null,
                         prefixIcon: Container(
                           width: 50,
                           child: Image.asset(AppAssets.icUser),
@@ -81,7 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: TextStyle(fontSize: 18, color: Colors.black),
                     decoration: InputDecoration(
                         labelText: "Phone number",
-                        // errorText: "",
+                        errorText: snapshot.hasError ? snapshot.error.toString() : null,
                         prefixIcon: Container(
                           width: 50, child: Image.asset(AppAssets.icPhone),
                         ),
@@ -102,7 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       style: TextStyle(fontSize: 18, color: Colors.black),
                       decoration: InputDecoration(
                           labelText: "Email",
-                          // errorText: "",
+                          errorText: snapshot.hasError ? snapshot.error.toString() : null,
                           prefixIcon: Container(
                             width: 50,
                             child: Image.asset(AppAssets.icMail),
@@ -126,7 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     obscureText: true, // an mat khau
                     decoration: InputDecoration(
                         labelText: "Password",
-                        // errorText: "",
+                        errorText: snapshot.hasError ? snapshot.error.toString() : null,
                         prefixIcon: Container(
                           width: 50, child: Image.asset(AppAssets.icLock),
                         ),
@@ -195,12 +197,16 @@ class _RegisterPageState extends State<RegisterPage> {
     if (isValid) {
       // create user
       // loading dialog
-      authBloc.signUp(_emailController.text, _passController.text,
-          _phoneController.text, _nameController.text, () {
+      LoadingDialog.showLoadingDialog(context, 'Loading...'); // khi nguoi dung an dky show dialog
+      authBloc.signUp(_emailController.text.trim(), _passController.text.trim(),
+          _phoneController.text.trim(), _nameController.text.trim(), () {
+        LoadingDialog.hideLoadingDialog(context); // neu thanh cong thi tat di
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => HomePage()));
+                context, MaterialPageRoute(builder: (context) => LoginPage()));
           }, (msg) {
             // show msg dialog
+            LoadingDialog.hideLoadingDialog(context); // tat di
+            MsgDiaLog.showMsgDialog(context, "Sign-In", msg); // show thong bao neu loi
           });
     }
   }
